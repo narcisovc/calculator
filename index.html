@@ -5,12 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Calculadora Científica Moderna</title>
   <style>
-    /* Reinicio básico */
+    /* Evita que se desplace la página en cualquier dispositivo */
+    html, body {
+      overflow: hidden;
+    }
+
+    /* Uso de fuentes de sistema para lograr un aspecto elegante y moderno */
     * {
       box-sizing: border-box;
     }
     body {
-      background: #f2f2f7; /* Fondo claro, estilo iOS */
+      background: #f2f2f7; /* Fondo claro típico de iOS */
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       display: flex;
       justify-content: center;
@@ -66,7 +71,7 @@
       overflow-x: auto;
       margin-top: 5px;
     }
-    /* En estado OFF, no se muestra texto en el área de resultados */
+    /* En estado OFF, el área de resultados queda vacía */
     .display.off .result {
       color: transparent;
     }
@@ -154,13 +159,13 @@
       content: "⇆";
       font-size: 1.5em;
     }
-    /* Botón On/Off (1 columna, rojo apagado / verde encendido) */
+    /* Botón On/Off (ocupa 1 columna) */
     .btn-onoff {
       padding: 15px;
       font-size: 1em;
       border: none;
       border-radius: 8px;
-      background: #ff3b30; /* Rojo cuando está apagado */
+      background: #ff3b30; /* Rojo cuando apagado */
       color: #fff;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       cursor: pointer;
@@ -172,7 +177,7 @@
     .btn-onoff:active {
       transform: translateY(2px);
     }
-    /* Contenedor derecho: imagen decorativa con LED */
+    /* Contenedor derecho: imagen decorativa con LED indicador */
     .calculator-right {
       flex: 1;
       position: relative;
@@ -194,7 +199,7 @@
       height: 100%;
       object-fit: cover;
     }
-    /* LED indicador, posicionado en la esquina superior derecha de la imagen */
+    /* LED indicador: se posiciona en la esquina superior derecha de la imagen */
     .led {
       position: absolute;
       top: 10px;
