@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculadora Científica Moderna</title>
+  <style>
+    /* Uso de fuentes de sistema para lograr un aspecto elegante y moderno */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      background: #f2f2f7; /* Fondo claro típico de iOS */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    /* Contenedor principal de la calculadora */
+    .calculator {
+      background: linear-gradient(135deg, #ffffff, #f7f7f7);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 600px;
+      display: flex;
+      flex-direction: row;
+    }
+    /* Contenedor izquierdo: calculadora */
+    .calculator-left {
+      flex: 2;
+    }
+    /* Pantalla para operaciones y resultados */
+    .display {
+      width: 100%;
+      height: 150px;
+      background: #ffffff;
+      border: 1px solid #d1d1d6;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      padding: 10px;
+      text-align: right;
+      overflow: auto;
+      transition: background 0.3s ease;
+    }
+    /* Estado OFF: fondo gris oscuro con textura film grain; no se muestra texto en la línea de resultados */
+    .display.off {
+      background: #1c1c1e url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAQCAYAAADJViUEAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAPYQAAD2EBqD+naQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAABYSURBVDiNxc4xDsAgCAXQ+X+VWjIEEfI9JcuXAcw5n3GDs4kBuWCkAmOJt6I1owTgLDGadEmAh/2wF8Ifu3bAAAAAElFTkSuQmCC") repeat;
+      color: transparent;
+    }
+    .display .operation {
+      font-size: 1.3em;
+      color: #3c3c43;
+      min-height: 30px;
+      overflow-x: auto;
+    }
+    .display.off .operation {
+      color: #8e8e93;
+    }
+    .display .result {
+      font-size: 2em;
+      font-weight: 600;
+      min-height: 60px;
+      overflow-x: auto;
+      margin-top: 5px;
+    }
+    /* En estado OFF, el área de resultados queda vacía */
+    .display.off .result {
+      color: transparent;
+    }
+    /* Organización de botones en cuadrícula */
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+    /* Botones numéricos */
+    .btn-number {
+      background: #f2f2f7;
+      padding: 15px;
+      font-size: 1.1em;
+      color: #1c1c1e;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn-number:hover {
+      background: #e5e5ea;
+    }
+    /* Botones de funciones y operadores */
+    .btn-function {
+      background: #d1d1d6;
+      padding: 15px;
+      font-size: 1.1em;
+      color: #1c1c1e;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn-function:hover {
+      background: #c7c7cc;
+    }
+    /* Botón igual (ocupa 2 columnas) */
+    .btn-equals {
+      background: #000;
+      padding: 15px;
+      font-size: 1.2em;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      grid-column: span 2;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn-equals:hover {
+      background: #333;
+    }
+    /* Botón Frac/Dec (ocupa 2 columnas) */
+    .btn-toggle {
+      background: #000;
+      padding: 15px;
+      font-size: 1em;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      grid-column: span 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn-toggle:hover {
+      background: #333;
+    }
+    .btn-toggle::before {
+      content: "⇆";
+      font-size: 1.5em;
+    }
+    /* Botón On/Off (1 columna, rojo cuando apagado, verde cuando encendido) */
+    .btn-onoff {
+      padding: 15px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background: #ff3b30;  /* Rojo por defecto (apagado) */
+      color: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .btn-onoff:hover {
+      background: #ff453a;
+    }
+    .btn-onoff:active {
+      transform: translateY(2px);
+    }
+    /* Contenedor derecho: imagen decorativa con LED indicador */
+    .calculator-right {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0 20px;
+    }
+    .image-container {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 10px;
+      position: relative;
+    }
+    .image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    /* LED indicador: se posiciona en la esquina superior derecha de la imagen */
+    .led {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background-color: red; /* Rojo cuando apagado */
+      border: 1px solid #000;
+      box-shadow: 0 0 8px rgba(0,0,0,0.4);
+    }
+    /* Representación fraccional */
+    .fraction {
+      display: inline-block;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .fraction .numerator {
+      display: block;
+      border-bottom: 1px solid #000;
+      padding: 0 4px;
+    }
+    .fraction .denominator {
+      display: block;
+      padding: 0 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <!-- Calculadora -->
+    <div class="calculator-left">
+      <!-- La pantalla inicia en estado OFF -->
+      <div class="display off">
+        <div class="operation" id="operation"></div>
+        <div class="result" id="result"></div>
+      </div>
+      <div class="buttons">
+        <button class="btn-function" onclick="clearDisplay()">C</button>
+        <button class="btn-function" onclick="deleteChar()">⌫</button>
+        <button class="btn-function" onclick="appendToDisplay('(')"> ( </button>
+        <button class="btn-function" onclick="appendToDisplay(')')"> ) </button>
+        <button class="btn-function" onclick="appendToDisplay('/')">÷</button>
+        <button class="btn-number" onclick="appendToDisplay('7')">7</button>
+        <button class="btn-number" onclick="appendToDisplay('8')">8</button>
+        <button class="btn-number" onclick="appendToDisplay('9')">9</button>
+        <button class="btn-function" onclick="appendToDisplay('*')">×</button>
+        <button class="btn-function" onclick="appendToDisplay('Math.sqrt(')">√</button>
+        <button class="btn-number" onclick="appendToDisplay('4')">4</button>
+        <button class="btn-number" onclick="appendToDisplay('5')">5</button>
+        <button class="btn-number" onclick="appendToDisplay('6')">6</button>
+        <button class="btn-function" onclick="appendToDisplay('-')">-</button>
+        <button class="btn-function" onclick="handlePower()">^</button>
+        <button class="btn-number" onclick="appendToDisplay('1')">1</button>
+        <button class="btn-number" onclick="appendToDisplay('2')">2</button>
+        <button class="btn-number" onclick="appendToDisplay('3')">3</button>
+        <button class="btn-function" onclick="appendToDisplay('+')">+</button>
+        <button class="btn-function" onclick="appendToDisplay('Math.log(')">ln</button>
+        <button class="btn-function" onclick="appendToDisplay('sinDeg(')">sin</button>
+        <button class="btn-function" onclick="appendToDisplay('cosDeg(')">cos</button>
+        <button class="btn-function" onclick="appendToDisplay('tanDeg(')">tan</button>
+        <button class="btn-number" onclick="appendToDisplay('0')">0</button>
+        <button class="btn-number" onclick="appendToDisplay('.')">.</button>
+        <button class="btn-equals" onclick="calculate()">=</button>
+        <button class="btn-toggle" onclick="toggleResultRepresentation()"></button>
+        <button class="btn-onoff" onclick="toggleOnOff()">On/Off</button>
+      </div>
+    </div>
+    <!-- Contenedor derecho: imagen decorativa con LED indicador -->
+    <div class="calculator-right">
+      <div class="image-container">
+        <img src="https://i.postimg.cc/Kzx61D0m/engin-akyurt-el2py0-GLHk-A-unsplash.jpg" alt="Imagen decorativa">
+        <div id="led" class="led"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    let currentResult = null;
+    let resultDisplayMode = "fraction";
+    let isCalculatorOn = false;
+
+    function checkOn() {
+      return isCalculatorOn;
+    }
+
+    function appendToDisplay(value) {
+      if (!checkOn()) return;
+      document.getElementById('operation').textContent += value;
+    }
+
+    function clearDisplay() {
+      if (!checkOn()) return;
+      document.getElementById('operation').textContent = '';
+      document.getElementById('result').innerHTML = '';
+      currentResult = null;
+    }
+
+    function deleteChar() {
+      if (!checkOn()) return;
+      const operation = document.getElementById('operation');
+      operation.textContent = operation.textContent.slice(0, -1);
+    }
+
+    function decimalToFraction(value, tolerance = 1e-6, maxDenom = 100) {
+      if (value === 0) return "0";
+      if (Math.abs(value - Math.round(value)) < tolerance) {
+        return Math.round(value).toString();
+      }
+      let bestNum = 1, bestDenom = 1, bestError = Math.abs(value - bestNum / bestDenom);
+      for (let denom = 1; denom <= maxDenom; denom++) {
+        let num = Math.round(value * denom);
+        let error = Math.abs(value - num / denom);
+        if (error < bestError) {
+          bestError = error;
+          bestNum = num;
+          bestDenom = denom;
+        }
+        if (error < tolerance) break;
+      }
+      if (bestError > tolerance) return null;
+      const gcd = greatestCommonDivisor(bestNum, bestDenom);
+      bestNum /= gcd;
+      bestDenom /= gcd;
+      return bestDenom === 1 ? bestNum.toString() : `${bestNum}/${bestDenom}`;
+    }
+
+    function greatestCommonDivisor(a, b) {
+      while (b !== 0) {
+        [a, b] = [b, a % b];
+      }
+      return a;
+    }
+
+    function fixExpression(expr) {
+      expr = expr.replace(/(\d|\))\s*(Math\.)/g, "$1*$2");
+      const openCount = (expr.match(/\(/g) || []).length;
+      const closeCount = (expr.match(/\)/g) || []).length;
+      if (openCount > closeCount) {
+        expr += ")".repeat(openCount - closeCount);
+      }
+      return expr;
+    }
+
+    function displayResult(result) {
+      const resultContainer = document.getElementById('result');
+      if (typeof result === "number") {
+        if (resultDisplayMode === "fraction") {
+          let fraction = decimalToFraction(result);
+          if (fraction !== null) {
+            if (fraction.includes("/")) {
+              let parts = fraction.split("/");
+              resultContainer.innerHTML = `
+                <div class="fraction">
+                  <div class="numerator">${parts[0]}</div>
+                  <div class="denominator">${parts[1]}</div>
+                </div>`;
+            } else {
+              resultContainer.textContent = fraction;
+            }
+          } else {
+            resultContainer.textContent = result.toFixed(8);
+          }
+        } else {
+          resultContainer.textContent = result.toFixed(8);
+        }
+      } else {
+        resultContainer.textContent = result;
+      }
+    }
+
+    function calculate() {
+      if (!checkOn()) return;
+      let operationText = document.getElementById('operation').textContent;
+      operationText = fixExpression(operationText);
+      try {
+        let resultado = eval(operationText);
+        currentResult = resultado;
+        displayResult(currentResult);
+        document.getElementById('operation').textContent = "";
+      } catch (error) {
+        document.getElementById('result').textContent = 'Error';
+      }
+    }
+
+    function handlePower() {
+      if (!checkOn()) return;
+      const opElem = document.getElementById('operation');
+      let expr = opElem.textContent;
+      const match = expr.match(/(\d+(\.\d+)?)$/);
+      if (match) {
+        const base = match[0];
+        expr = expr.slice(0, expr.length - base.length);
+        opElem.textContent = expr + "Math.pow(" + base + ",";
+      } else {
+        opElem.textContent += "Math.pow(";
+      }
+    }
+
+    function toggleResultRepresentation() {
+      if (!checkOn() || currentResult === null) return;
+      resultDisplayMode = (resultDisplayMode === "fraction") ? "decimal" : "fraction";
+      displayResult(currentResult);
+    }
+
+    function toggleOnOff() {
+      isCalculatorOn = !isCalculatorOn;
+      const displayElem = document.querySelector('.display');
+      const resultElem = document.getElementById('result');
+      const operationElem = document.getElementById('operation');
+      const ledElem = document.getElementById('led');
+      if (isCalculatorOn) {
+        displayElem.classList.remove('off');
+        resultElem.textContent = "0";
+        operationElem.textContent = "";
+        ledElem.style.backgroundColor = "green";
+      } else {
+        displayElem.classList.add('off');
+        resultElem.textContent = "";
+        ledElem.style.backgroundColor = "red";
+      }
+    }
+
+    function sinDeg(x) {
+      return Math.sin(x * Math.PI / 180);
+    }
+    function cosDeg(x) {
+      return Math.cos(x * Math.PI / 180);
+    }
+    function tanDeg(x) {
+      return Math.tan(x * Math.PI / 180);
+    }
+  </script>
+</body>
+</html>
