@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Calculadora Científica Moderna</title>
   <style>
-    /* Uso de fuentes de sistema para lograr un aspecto elegante y moderno */
+    /* Reinicio básico */
     * {
       box-sizing: border-box;
     }
     body {
-      background: #f2f2f7; /* Fondo claro típico de iOS */
+      background: #f2f2f7; /* Fondo claro, estilo iOS */
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       display: flex;
       justify-content: center;
@@ -28,7 +28,7 @@
       display: flex;
       flex-direction: row;
     }
-    /* Contenedor izquierdo: calculadora */
+    /* Contenedor izquierdo: la calculadora */
     .calculator-left {
       flex: 2;
     }
@@ -45,7 +45,7 @@
       overflow: auto;
       transition: background 0.3s ease;
     }
-    /* Estado OFF: fondo gris oscuro con textura film grain; no se muestra texto en la línea de resultados */
+    /* Estado OFF: fondo gris oscuro con textura film grain */
     .display.off {
       background: #1c1c1e url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAQCAYAAADJViUEAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAPYQAAD2EBqD+naQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAABYSURBVDiNxc4xDsAgCAXQ+X+VWjIEEfI9JcuXAcw5n3GDs4kBuWCkAmOJt6I1owTgLDGadEmAh/2wF8Ifu3bAAAAAElFTkSuQmCC") repeat;
       color: transparent;
@@ -66,7 +66,7 @@
       overflow-x: auto;
       margin-top: 5px;
     }
-    /* En estado OFF, el área de resultados queda vacía */
+    /* En estado OFF, no se muestra texto en el área de resultados */
     .display.off .result {
       color: transparent;
     }
@@ -91,6 +91,9 @@
     .btn-number:hover {
       background: #e5e5ea;
     }
+    .btn-number:active {
+      transform: translateY(2px);
+    }
     /* Botones de funciones y operadores */
     .btn-function {
       background: #d1d1d6;
@@ -105,6 +108,9 @@
     }
     .btn-function:hover {
       background: #c7c7cc;
+    }
+    .btn-function:active {
+      transform: translateY(2px);
     }
     /* Botón igual (ocupa 2 columnas) */
     .btn-equals {
@@ -121,6 +127,9 @@
     }
     .btn-equals:hover {
       background: #333;
+    }
+    .btn-equals:active {
+      transform: translateY(2px);
     }
     /* Botón Frac/Dec (ocupa 2 columnas) */
     .btn-toggle {
@@ -145,13 +154,13 @@
       content: "⇆";
       font-size: 1.5em;
     }
-    /* Botón On/Off (1 columna, rojo cuando apagado, verde cuando encendido) */
+    /* Botón On/Off (1 columna, rojo apagado / verde encendido) */
     .btn-onoff {
       padding: 15px;
       font-size: 1em;
       border: none;
       border-radius: 8px;
-      background: #ff3b30;  /* Rojo por defecto (apagado) */
+      background: #ff3b30; /* Rojo cuando está apagado */
       color: #fff;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       cursor: pointer;
@@ -163,7 +172,7 @@
     .btn-onoff:active {
       transform: translateY(2px);
     }
-    /* Contenedor derecho: imagen decorativa con LED indicador */
+    /* Contenedor derecho: imagen decorativa con LED */
     .calculator-right {
       flex: 1;
       position: relative;
@@ -185,7 +194,7 @@
       height: 100%;
       object-fit: cover;
     }
-    /* LED indicador: se posiciona en la esquina superior derecha de la imagen */
+    /* LED indicador, posicionado en la esquina superior derecha de la imagen */
     .led {
       position: absolute;
       top: 10px;
@@ -193,7 +202,7 @@
       width: 15px;
       height: 15px;
       border-radius: 50%;
-      background-color: red; /* Rojo cuando apagado */
+      background-color: red; /* Rojo por defecto (apagado) */
       border: 1px solid #000;
       box-shadow: 0 0 8px rgba(0,0,0,0.4);
     }
@@ -211,6 +220,22 @@
     .fraction .denominator {
       display: block;
       padding: 0 4px;
+    }
+    /* Media Query para móviles: pantalla completa en modo vertical */
+    @media (max-width: 600px) {
+      .calculator {
+        width: 100vw;
+        height: 100vh;
+        flex-direction: column;
+        border-radius: 0;
+      }
+      .calculator-right {
+        display: none;
+      }
+      .calculator-left {
+        flex: none;
+        width: 100%;
+      }
     }
   </style>
 </head>
